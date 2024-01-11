@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <style>
+        .code {
+            width: 95%;
+            height: 600px;
+            padding: 1px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            resize: vertical;
+        }
+        
+        .button {
+            padding: 8px 16px;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            background-color: #4CAF50;
+            color: white;
+            cursor: pointer;
+        }
+        
+        .button:hover {
+            background-color: #45a049;
+        }
+        
+        #output {
+            margin-top: 20px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+    </style>
+    <script>
+        function interp() {
+
+            let output = '';
+
+            let value = [{
+                name: "?",
+                value: -1,
+                int: 1
+            }, ];
+
+            //const str = "종합 1.51 간호학과 합격 가능한가요?"
+
+            const interpreter = [
+                function(str) {
+                    const regex = /^(교과|종합|논술|기균) (\d)\.(\d)(\d) ([^\s]+)과 (합격|추합) 가능한가요/;
+
+                    //const testString = "종합 5.21 간호학과 합격 가능한가요?"; // 이 부분 지우자
+                    const match = str.match(regex); // 
+
+                    if (match) {
+                        const [, category, digit1, digit2, digit3, sub, status] = match;
+
+                        // 1. 교과, 종합 등의 문자를 숫자로 변환
+                        const categoryMap = {
+                            '교과': 1,
+                            '종합': 2,
+                            '논술': 3,
+                            '기균': 4,
+                        };
+                        const calculate = categoryMap[category];
+
+                        // 2. x * (y + z) 값을 구해서 num에 저장
+                        const num = parseInt(digit1) + (parseInt(digit2) * 10) + (parseInt(digit3) * 100);
+                        const pm = status === '합격' ? 1 : 2;
+
+                        const fi = value.findIndex(value => value.name == sub);
+                        if (fi != -1) {
+                            if (calculate == 1) {
+                                value[fi].value += num;
+                            } else if (calculate == 2) {
+                                value[fi].value -= num;
+                            } else if (calculate == 3) {
+                                value[fi].value *= num;
+                            } else {
+                                value[fi].value /= num;
+                            }
+                            //return true;
+
+
+                        }
+
+
+
+                    }
+                },
+                function(str) {
+                    const regex = /^정시 (\d)(\d)(\d)(\d)(\d) ([^\s]+)과 (합격|추합) 가능한가요/;
+
+                    //const str = "정시 33791 의예과 추합 가능한가요?";
+                    const match = str.match(regex);
+
+                    if (match) {
+                        const [, v, w, x, y, z, sub, status] = match;
+
+
+                        const num = parseInt(v) * 100 + parseInt(w) * 10 + parseInt(x);
+
+
+                        const boolte = parseInt(y) <= 5 ? 1 : 0;
+                        const ifnew = parseInt(z) <= 5 ? 1 : 0;
+
+
+                        const subString = sub;
+
+
+                        const pm = status === '합격' ? 1 : 2;
+
+                        const fi = value.findIndex(value => value.name == sub);
+
+                        if (fi == -1) {
+                            value.push({
+                                name: sub,
+                                value: num,
+                                int: boolte,
+                            });
+                        } else if (ifnew) {
+                            value[fi] = {
+                                name: sub,
+                                value: num,
+                                int: boolte,
+                            }
+                        }
+
+
+                    }
+
+                },
+
+                function(str) {
+                    const regex = /가천대 ([^\s]+)과 (교과|종합|논술|기균) (\d)\.(\d)(\d)로 (합격|추합)했는데 좋나요/;
+                    //const str = "가천대 의예과 교과 3.57로 합격했는데 좋나요";
+
+                    const match = str.match(regex);
+
+                    if (match) {
+                        const [, sub, category, x, y, z, pm] = match;
+                        const categoryMap = {
+                            '교과': 1,
+                            '종합': 2,
+                            '논술': 3,
+                            '기균': 4,
+                        };
+                        const cal = categoryMap[category];
+
+
+                        const num = parseInt(x) + parseInt(y) * 10 + parseInt(z) * 100;
+
+                        const fi = value.findIndex(value => value.name == sub);
+                        if (fi != -1) {
+                            if (value[fi].value != 0) {
+                                if (cal == 1) {
+                                    value[fi].value += num;
+                                } else if (cal == 2) {
+                                    value[fi].value -= num;
+                                } else if (cal == 3) {
+                                    value[fi].value *= num;
+                                } else {
+                                    value[fi].value /= num;
+                                }
+                            }
+                            //return true;
+
+
+                        }
+
+
+                    }
+
+                },
+                function(str) {
+                    const regex = /가천대 ([^\s]+)과 농어촌 (\d)\.(\d)(\d)로 (합격|추합)했는데 좋나요/;
+                    const match = str.match(regex);
+
+                    if (match) {
+                        const [, sub, x, y, z, pm] = match;
+
+                        const num = parseInt(x);
+                        const rotate = parseInt(y);
+                        const cal = parseInt(z);
+
+
+
+
+                        const fi = value.findIndex(value => value.name == sub);
+                        if (fi != -1) {
+                            for (let r = 0; r < cal; r++) {
+                                if (rotate == 1) {
+                                    value[fi].value += num;
+                                } else if (rotate == 2) {
+                                    value[fi].value -= num;
+                                } else if (rotate == 3) {
+                                    value[fi].value *= num;
+                                } else {
+                                    value[fi].value /= num;
+                                }
+                            }
+                        }
+
+                    }
+
+                },
+                function(str) {
+                    const regex = /가천대 ([^\s]+)과 (자퇴|휴학)해도 되나요/;
+                    const match = str.match(regex);
+
+                    if (match) {
+                        const [, sub, end, ] = match;
+                        const fi = value.findIndex(value => value.name == sub);
+                        const ifend = (end == "자퇴" ? 1 : 0)
+                        if (fi != -1) {
+                            if (!value[fi].int) {
+                                output += (value[fi].value);
+                            } else {
+                                if (value[fi].value == 10) {
+                                    output += '<br>';
+                                } else {
+                                    output += (String.fromCharCode(value[i].value));
+                                }
+                            }
+                            if (ifend) {
+                                value.splice(fi, 1);
+                            }
+                        }
+                    }
+                }
+            ]
+
+
+            const str = document.querySelector('.code').value;
+            const codearr = str.split("?");
+
+            for (let i = 0; i < codearr.length; i++) {
+                for (let j = 0; j < interpreter.length; j++) {
+                    interpreter[j](codearr[i]);
+                }
+            }
+
+
+
+
+            for (let i = 1; i < value.length; i++) {
+                if (!value[i].int) {
+                    output += (value[i].value);
+                } else {
+                    if (value[i].value == 10) {
+                        output += '<br>';
+                    } else {
+                        output += (String.fromCharCode(value[i].value));
+                    }
+                }
+            }
+
+            let outputDiv = document.getElementById('output');
+            outputDiv.innerHTML = ('<p>' + output + '</p>');
+        }
+    </script>
+</head>
+
+<body>
+    <div>
+        <textarea class="code" placeholder="여기에 텍스트 입력"></textarea>
+
+        <button onclick="interp()">컴파일</button>
+    </div>
+    <br>
+    <div id="output">
+
+    </div>
+</body>
+
+</html>
